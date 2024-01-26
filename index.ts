@@ -23,7 +23,7 @@ mongoose.connect(MONGO_URI, {
   console.log("DB connected.....")
 }).catch(err => console.log('error'+ err))
 
-app.listen(9000, () => {
+app.listen(8000, () => {
   console.clear();
-  console.log("App is listening on the port 9000");
+  console.log("App is listening on the port 8000");
 });
