@@ -22,7 +22,7 @@ export const GetTopRestaurants = async (req: Request, res: Response, next: NextF
 
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({ pincode: pincode, serviceAvailable: false })
+  const result = await Vandor.find({ pincode: pincode, serviceAvailable: true })
     .sort([["rating", "descending"]])
     .limit(10);
 
@@ -38,7 +38,7 @@ export const GetFoodIn30Min = async (req: Request, res: Response, next: NextFunc
 
    const pincode = req.params.pincode;
 
-   const result = await Vandor.find({ pincode: pincode, serviceAvailable: false,}).populate("foods")
+   const result = await Vandor.find({ pincode: pincode, serviceAvailable: true}).populate("foods")
 
 
    if (result.length > 0) {
@@ -65,7 +65,7 @@ export const SearchFoods = async (req: Request, res: Response, next: NextFunctio
 
      const pincode = req.params.pincode;
 
-     const result = await Vandor.find({ pincode: pincode, serviceAvailable: false}).populate("foods");
+     const result = await Vandor.find({ pincode: pincode, serviceAvailable: true}).populate("foods");
 
      if (result.length > 0) {
        let foodResult: any = [];
