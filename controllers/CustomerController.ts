@@ -1,12 +1,13 @@
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 import express, { Request, Response, NextFunction } from "express";
-import { CreateCustomerInputs } from "../dto/Customer.dto";
+import { CreateCustomerInputs, UserLoginInputs } from "../dto/Customer.dto";
 import {
   GenerateOtp,
   GeneratePassword,
   GenerateSalt,
   GenerateSignature,
+  ValidatePassword,
   onRequestOTP,
 } from "../utility";
 import { Customer } from "../models/Customer";
@@ -32,7 +33,7 @@ export const CustomerSignUp = async (
 
   const { otp, expiry } = GenerateOtp();
 
-  const existingCustomer = await Customer.findOne({ emali: email });
+  const existingCustomer = await Customer.findOne({ email: email });
 
   if (existingCustomer !== null) {
     return res.status(400).json({ message: "User Already exists" });
@@ -64,13 +65,11 @@ export const CustomerSignUp = async (
       verified: result.verified,
     });
     // send the result to client
-    return res
-      .status(201)
-      .json({
-        signature: signature,
-        verified: result.verified,
-        email: result.email,
-      });
+    return res.status(201).json({
+      signature: signature,
+      verified: result.verified,
+      email: result.email,
+    });
   }
 
   return res.status(400).json({ message: "Error with SignUp" });
@@ -82,30 +81,72 @@ export const CustomerLogin = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const loginInputs = plainToClass(UserLoginInputs, req.body);
 
-export const CustomerVerify = async ( req: Request, res: Response, next: NextFunction) => {
+  const loginErrors = await validate(loginInputs, {
+    validationError: { target: false },
+  });
+
+  if (loginErrors.length > 0) {
+    return res.status(400).json(loginErrors);
+  }
+
+  const { email, password } = loginInputs;
+
+  const customer = await Customer.findOne({ email: email });
+
+  if (customer) {
+    const validation = await ValidatePassword(
+      password,
+      customer.password,
+      customer.salt
+    );
+
+    if (validation) {
+      // generate the signature
+      const signature = GenerateSignature({
+        _id: customer._id,
+        email: customer.email,
+        verified: customer.verified,
+      });
+      // send the result to client
+      return res.status(201).json({
+        signature: signature,
+        verified: customer.verified,
+        email: customer.email,
+      });
+    }
+  }
+
+  return res.status(404).json({ message: "Login Error" });
+};
+
+// -------------------------------------------------------------------------------
+
+export const CustomerVerify = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { otp } = req.body;
   const customer = req.user;
 
-  if(customer){
+  if (customer) {
+    const profile = await Customer.findById(customer._id);
 
-    const profile = await Customer.findById(customer._id)
+    if (profile) {
+      if (profile.otp === parseInt(otp) && profile.otp_expiry >= new Date()) {
+        profile.verified = true;
 
-    if(profile){
-
-      if(profile.otp === parseInt(otp) && profile.otp_expiry <= new Date()){
-
-        profile.verified = true
-
-        const updateCustomerResponse = await profile.save()
+        const updateCustomerResponse = await profile.save();
 
         // Generate the signature
         const signature = GenerateSignature({
           _id: updateCustomerResponse._id,
           email: updateCustomerResponse.email,
           verified: updateCustomerResponse.verified,
-        })
+        });
 
         return res.status(201).json({
           signature: signature,
@@ -114,17 +155,74 @@ export const CustomerVerify = async ( req: Request, res: Response, next: NextFun
         });
       }
     }
-
   }
 
   return res.status(400).json({ message: "Error with OTP Validation" });
 };
 
+// =============================================================================
+
+// export const RequestOtp = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const customer = req.user;
+
+//   if (customer) {
+//     const profile = await Customer.findById(customer._id);
+
+//     if (profile) {
+//       const { otp, expiry } = GenerateOtp();
+
+//       profile.otp = otp;
+//       profile.otp_expiry = expiry;
+
+//       await profile.save();
+//       await onRequestOTP(otp, profile.phone);
+
+//       res.status(200).json({ message: "OTP Sent to your registered number!" });
+//     }
+
+//     res.status(400).json({ message: "Error with Request OTP" });
+//   }
+// };
+
 export const RequestOtp = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const customer = req.user;
+
+  if (!customer) {
+    return res.status(400).json({ message: "Error with Request OTP" });
+  }
+
+  try {
+    const profile = await Customer.findById(customer._id);
+
+    if (!profile) {
+      return res.status(400).json({ message: "Error with Request OTP" });
+    }
+
+    const { otp, expiry } = GenerateOtp();
+
+    profile.otp = otp;
+    profile.otp_expiry = expiry;
+
+    await profile.save();
+    await onRequestOTP(otp, profile.phone);
+
+    res.status(200).json({ message: "OTP Sent to your registered number!" });
+  } catch (error) {
+    console.error("Error in RequestOtp:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+// ========================================================================
 
 export const GetCustomerProfile = async (
   req: Request,
