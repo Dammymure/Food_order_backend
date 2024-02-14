@@ -1,7 +1,11 @@
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 import express, { Request, Response, NextFunction } from "express";
-import { CreateCustomerInputs, UserLoginInputs } from "../dto/Customer.dto";
+import {
+  CreateCustomerInputs,
+  UserLoginInputs,
+  EditCustomerProfileInputs,
+} from "../dto/Customer.dto";
 import {
   GenerateOtp,
   GeneratePassword,
@@ -217,7 +221,7 @@ export const RequestOtp = async (
     res.status(200).json({ message: "OTP Sent to your registered number!" });
   } catch (error) {
     console.error("Error in RequestOtp:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Error in RequestOtp" });
   }
 };
 
@@ -228,10 +232,58 @@ export const GetCustomerProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
 
+  const customer = req.user;
+
+  if (customer) {
+    const profile = await Customer.findById(customer._id);
+
+    if (profile) {
+
+      return res.status(200).json(profile);
+    }
+  }
+  
+    res.status(400).json({ message: "Error with fetch profile" });
+
+};
+
+
+// ===========================================================================
 export const EditCustomerProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+
+  const customer = req.user
+
+  const profileInputs = plainToClass( EditCustomerProfileInputs , req.body)
+
+    const profileErrors = await validate(profileInputs, {
+      validationError: { target: false },
+    });
+
+    if(profileErrors.length > 0){
+      return res.status(400).json(profileErrors)
+    }
+
+    const { firstname, lastname, address } = profileInputs
+
+  if(customer){
+
+    const profile = await Customer.findById(customer._id)
+
+    if(profile){
+
+      profile.firstname = firstname
+      profile.lastname = lastname
+      profile.address = address
+
+      const result = await profile.save()
+
+      res.status(200).json(result)
+    }
+  }
+};
