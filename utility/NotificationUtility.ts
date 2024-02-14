@@ -1,5 +1,8 @@
 // email
 // notification
+
+import { ACCOUNT_SID, AUTHTOKEN, TWILIO_NUMBER } from "../config";
+
 // OTP
 export const GenerateOtp = () => {
   const otp = Math.floor(100000 + Math.random() * 900000);
@@ -10,13 +13,13 @@ export const GenerateOtp = () => {
 };
 
 export const onRequestOTP = async (otp: number, toPhoneNumber: string) => {
-  const accountSid = "ACe5f8edddd5ad84e55eadb23cd9eff07d";
-  const authToken = "58ccc5e08d9a01fe5a7028a98517a760";
+  const accountSid = ACCOUNT_SID
+  const authToken = AUTHTOKEN
   const client = require("twilio")(accountSid, authToken);
 
   const response = await client.messages.create({
     body: `Your OTP is ${otp}`,
-    from: "+19285646728",
+    from: TWILIO_NUMBER,
     to: `+234${toPhoneNumber}`,
   });
 
