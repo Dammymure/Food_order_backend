@@ -40,105 +40,105 @@ export const VandorLogin = async (
 
 // ---------------------------------------------------------------
 
-export const GetVandorProfile = async (req: Request, res: Response, next: NextFunction
+export const GetVandorProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
+  const user = req.user;
 
- const user = req.user
+  if (user) {
+    const existingVandor = await FindVandor(user._id);
 
- if(user){
-  
-  const existingVandor = await FindVandor(user._id)
+    return res.json(existingVandor);
+  }
 
-  return res.json(existingVandor)
- } 
-
- return res.json({"message":"Vandor information Not Found"})
-
+  return res.json({ message: "Vandor information Not Found" });
 };
 
 // --------------------------------------------------------------------------
 
-export const UpdateVandorProfile = async (req: Request, res: Response, next: NextFunction
+export const UpdateVandorProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
+  const { foodTypes, name, address, phone } = <EditVandorInputs>req.body;
+  const user = req.user;
 
-  const { foodTypes, name, address, phone } = <EditVandorInputs>req.body
-   const user = req.user;
+  if (user) {
+    const existingVandor = await FindVandor(user._id);
 
-   if (user) {
-     const existingVandor = await FindVandor(user._id);
-
-    if(existingVandor !== null){
-
+    if (existingVandor !== null) {
       existingVandor.name = name;
       existingVandor.address = address;
       existingVandor.phone = phone;
-      existingVandor.foodType = foodTypes
+      existingVandor.foodType = foodTypes;
 
       const savedResult = await existingVandor.save();
       return res.json(savedResult);
     }
 
-     return res.json(existingVandor);
-   }
+    return res.json(existingVandor);
+  }
 
-   return res.json({ message: "Vandor information Not Found" });
+  return res.json({ message: "Vandor information Not Found" });
 };
-
 
 // --------------------------------------------------------------------------
 
-export const UpdateVandorCoverImage = async (req: Request, res: Response, next: NextFunction
+export const UpdateVandorCoverImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
+  const user = req.user;
 
-    const user = req.user;
+  if (user) {
+    const vandor = await FindVandor(user._id);
 
-    if (user) {
+    if (vandor !== null) {
+      const files = req.files as [Express.Multer.File];
 
+      const images = files.map((file: Express.Multer.File) => file.filename);
 
-      const vandor = await FindVandor(user._id);
+      vandor.coverImages.push(...images);
 
-      if (vandor !== null) {
-        const files = req.files as [Express.Multer.File];
+      const result = await vandor.save();
 
-        const images = files.map((file: Express.Multer.File) => file.filename);
-
-        vandor.coverImages.push(...images);
-
-        const result = await vandor.save();
-
-        return res.json(result);
-      }
+      return res.json(result);
     }
+  }
 
-    return res.json({ message: "Something went wrong with adding Cover Image" });
-
-}
+  return res.json({ message: "Something went wrong with adding Cover Image" });
+};
 
 // ------------------------------------------------------------------------
 
-export const UpdateVandorServices = async (req: Request, res: Response, next: NextFunction
+export const UpdateVandorServices = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-    const user = req.user;
+  const user = req.user;
 
-   if (user) {
-     const existingVandor = await FindVandor(user._id);
+  if (user) {
+    const existingVandor = await FindVandor(user._id);
 
-    if(existingVandor !== null){
-
+    if (existingVandor !== null) {
       existingVandor.serviceAvailable = !existingVandor.serviceAvailable;
-      const savedResult = await existingVandor.save()
+      const savedResult = await existingVandor.save();
 
       return res.json(savedResult);
     }
 
-     return res.json(existingVandor);
-   }
+    return res.json(existingVandor);
+  }
 
-   return res.json({ message: "Vandor information Not Found" });
+  return res.json({ message: "Vandor information Not Found" });
 };
 
 // ------------------------------------------------------------------------
-
 
 export const AddFood = async (
   req: Request,
@@ -148,16 +148,16 @@ export const AddFood = async (
   const user = req.user;
 
   if (user) {
-    
-    const { name, description, category, foodType, readyTime, price } = <CreateFoodInputs>req.body;
+    const { name, description, category, foodType, readyTime, price } = <
+      CreateFoodInputs
+    >req.body;
 
     const vandor = await FindVandor(user._id);
 
     if (vandor !== null) {
+      const files = req.files as [Express.Multer.File];
 
-      const files = req.files as [Express.Multer.File]
-
-      const images = files.map((file: Express.Multer.File) => file.filename )
+      const images = files.map((file: Express.Multer.File) => file.filename);
 
       const createdFood = await Food.create({
         vandorId: vandor._id,
@@ -183,7 +183,6 @@ export const AddFood = async (
 
 // ------------------------------------------------------------------------
 
-
 export const GetFoods = async (
   req: Request,
   res: Response,
@@ -192,15 +191,12 @@ export const GetFoods = async (
   const user = req.user;
 
   if (user) {
+    const foods = await Food.find({ vandorId: user._id });
 
-    const foods = await Food.find({ vandorId: user._id})
-
-    if(foods !== null){
-      return res.json(foods)
+    if (foods !== null) {
+      return res.json(foods);
     }
   }
 
   return res.json({ message: "Vandor information Not Found" });
 };
-
-

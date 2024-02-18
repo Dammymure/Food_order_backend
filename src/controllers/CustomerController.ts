@@ -225,7 +225,6 @@ export const RequestOtp = async (
   }
 };
 
-
 // ========================================================================
 
 export const GetCustomerProfile = async (
@@ -233,22 +232,18 @@ export const GetCustomerProfile = async (
   res: Response,
   next: NextFunction
 ) => {
-
   const customer = req.user;
 
   if (customer) {
     const profile = await Customer.findById(customer._id);
 
     if (profile) {
-
       return res.status(200).json(profile);
     }
   }
-  
-    res.status(400).json({ message: "Error with fetch profile" });
 
+  res.status(400).json({ message: "Error with fetch profile" });
 };
-
 
 // ===========================================================================
 export const EditCustomerProfile = async (
@@ -256,34 +251,31 @@ export const EditCustomerProfile = async (
   res: Response,
   next: NextFunction
 ) => {
+  const customer = req.user;
 
-  const customer = req.user
+  const profileInputs = plainToClass(EditCustomerProfileInputs, req.body);
 
-  const profileInputs = plainToClass( EditCustomerProfileInputs , req.body)
+  const profileErrors = await validate(profileInputs, {
+    validationError: { target: false },
+  });
 
-    const profileErrors = await validate(profileInputs, {
-      validationError: { target: false },
-    });
+  if (profileErrors.length > 0) {
+    return res.status(400).json(profileErrors);
+  }
 
-    if(profileErrors.length > 0){
-      return res.status(400).json(profileErrors)
-    }
+  const { firstname, lastname, address } = profileInputs;
 
-    const { firstname, lastname, address } = profileInputs
+  if (customer) {
+    const profile = await Customer.findById(customer._id);
 
-  if(customer){
+    if (profile) {
+      profile.firstname = firstname;
+      profile.lastname = lastname;
+      profile.address = address;
 
-    const profile = await Customer.findById(customer._id)
+      const result = await profile.save();
 
-    if(profile){
-
-      profile.firstname = firstname
-      profile.lastname = lastname
-      profile.address = address
-
-      const result = await profile.save()
-
-      res.status(200).json(result)
+      res.status(200).json(result);
     }
   }
 };
