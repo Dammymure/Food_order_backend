@@ -10,8 +10,8 @@ const StartServer = async () => {
 
   await App(app);
 
-  app.listen(PORT, () => {
-    console.log(`Listening to port ${PORT}`);
+  app.listen(process.env.PORT, () => {
+    console.log(`Listening to port ${process.env.PORT}`);
   });
 };
 

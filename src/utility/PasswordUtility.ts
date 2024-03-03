@@ -22,7 +22,7 @@ export const ValidatePassword = async (
 };
 
 export const GenerateSignature = (payload: AuthPayload) => {
-  return jwt.sign(payload, APP_SECRET, { expiresIn: "1d" });
+  return jwt.sign(payload, process.env.APP_SECRET, { expiresIn: "1d" });
 };
 
 export const ValidateSignature = async (req: Request) => {
@@ -31,7 +31,7 @@ export const ValidateSignature = async (req: Request) => {
   if (signature) {
     const payload = (await jwt.verify(
       signature.split(" ")[1],
-      APP_SECRET
+      process.env.APP_SECRET
     )) as AuthPayload;
 
     req.user = payload;

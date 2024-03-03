@@ -13,13 +13,13 @@ export const GenerateOtp = () => {
 };
 
 export const onRequestOTP = async (otp: number, toPhoneNumber: string) => {
-  const accountSid = ACCOUNT_SID;
-  const authToken = AUTHTOKEN;
+  const accountSid = process.env.ACCOUNT_SID;
+  const authToken = process.env.AUTHTOKEN;
   const client = require("twilio")(accountSid, authToken);
 
   const response = await client.messages.create({
     body: `Your OTP is ${otp}`,
-    from: TWILIO_NUMBER,
+    from: process.env.TWILIO_NUMBER,
     to: `+234${toPhoneNumber}`,
   });
 
