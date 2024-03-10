@@ -1,5 +1,5 @@
 // export const MONGO_URI = "mongodb://localhost:27017/online_food_delivery"
-export const MONGO_URI = "mongodb+srv://dammymure1:dammymure@onlinefoodbackend.cbs9chv.mongodb.net/?retryWrites=true&w=majority";
+export const MONGO_URI = process.env.MONGO_URI;
 
 export const APP_SECRET = "Our_App_Secret"
 
