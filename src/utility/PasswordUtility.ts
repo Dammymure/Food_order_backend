@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Request } from "express";
 import jwt from "jsonwebtoken";
-import { VandorPayload } from "../dto";
+import { VendorPayload } from "../dto";
 import { APP_SECRET } from "../config";
 import { AuthPayload } from "../dto/Auth.dto";
 

@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-import { FoodDoc, Vandor } from "../models";
+import { FoodDoc, Vendor } from "../models";
 
 export const GetFoodAvailability = async (
   req: Request,
@@ -8,7 +8,7 @@ export const GetFoodAvailability = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({ pincode: pincode, serviceAvailable: true })
+  const result = await Vendor.find({ pincode: pincode, serviceAvailable: true })
     .sort([["rating", "descending"]])
     .populate("foods");
 
@@ -28,7 +28,7 @@ export const GetTopRestaurants = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({ pincode: pincode, serviceAvailable: true })
+  const result = await Vendor.find({ pincode: pincode, serviceAvailable: true })
     .sort([["rating", "descending"]])
     .limit(10);
 
@@ -46,7 +46,7 @@ export const GetFoodIn30Min = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({
+  const result = await Vendor.find({
     pincode: pincode,
     serviceAvailable: true,
   }).populate("foods");
@@ -54,8 +54,8 @@ export const GetFoodIn30Min = async (
   if (result.length > 0) {
     let foodResult: any = [];
 
-    result.map((vandor) => {
-      const foods = vandor.foods as [FoodDoc];
+    result.map((vendor) => {
+      const foods = vendor.foods as [FoodDoc];
 
       foodResult.push(...foods.filter((food) => food.readyTime <= 30));
     });
@@ -75,7 +75,7 @@ export const SearchFoods = async (
 ) => {
   const pincode = req.params.pincode;
 
-  const result = await Vandor.find({
+  const result = await Vendor.find({
     pincode: pincode,
     serviceAvailable: true,
   }).populate("foods");
@@ -98,7 +98,7 @@ export const RestaurantById = async (
 ) => {
   const id = req.params.id;
 
-  const result = await Vandor.findById(id).populate("foods");
+  const result = await Vendor.findById(id).populate("foods");
 
   if (result) {
     return res.status(200).json(result);
