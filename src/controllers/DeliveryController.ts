@@ -61,7 +61,6 @@ export const DeliveryUserSignUp = async (
     verified: false,
     lat: 0,
     log: 0,
-    pincode: pincode,
     isAvailable : false
   });
 
