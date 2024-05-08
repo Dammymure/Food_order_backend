@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import {
+  GetAvailableOffers,
   GetFoodAvailability,
   GetFoodIn30Min,
   GetTopRestaurants,
@@ -20,6 +21,9 @@ router.get("/foods-in-30-min/:pincode", GetFoodIn30Min);
 
 /**-------------Search Foods----------**/
 router.get("/search/:pincode", SearchFoods);
+
+/**-------------Find Offer----------**/
+router.get("/offers/:pincode", GetAvailableOffers);
 
 /**-----------Find Restaurant by Id---------**/
 router.get("/restaurant/:id", RestaurantById);

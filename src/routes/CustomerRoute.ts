@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import {
   AddToCart,
   CreateOrder,
+  CreatePayment,
   CustomerLogin,
   CustomerSignUp,
   CustomerVerify,
@@ -11,7 +12,8 @@ import {
   GetCustomerProfile,
   GetOrderById,
   GetOrders,
-  RequestOtp
+  RequestOtp,
+  VerifyOffer
 } from "../controllers";
 import { Authenticate } from "../middleware";
 
@@ -43,8 +45,12 @@ router.post('/cart', AddToCart)
 router.get('/cart', GetCart)
 router.delete('/cart', DeleteCart)
 
+// Apply Offers
+router.get('/offer/verify/:id', VerifyOffer)
 
 // Payment
+router.post("/create-payment", CreatePayment)
+
 
 // Order
 router.post('/create-order', CreateOrder);

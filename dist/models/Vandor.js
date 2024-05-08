@@ -1,18 +1,18 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function (o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
     if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
+        desc = { enumerable: true, get: function () { return m[k]; } };
     }
     Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
+}) : (function (o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function (o, v) {
     Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
+}) : function (o, v) {
     o["default"] = v;
 });
 var __importStar = (this && this.__importStar) || function (mod) {
@@ -23,9 +23,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Vandor = void 0;
+exports.Vendor = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const VandorSchema = new mongoose_1.Schema({
+const VendorSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     ownerName: { type: String, required: true },
     foodType: { type: [String] },
@@ -39,9 +39,9 @@ const VandorSchema = new mongoose_1.Schema({
     coverImages: { type: [String] },
     rating: { type: Number },
     foods: [{
-            type: mongoose_1.default.SchemaTypes.ObjectId,
-            ref: 'food'
-        }],
+        type: mongoose_1.default.SchemaTypes.ObjectId,
+        ref: 'food'
+    }],
 }, {
     toJSON: {
         transform(doc, ret) {
@@ -54,5 +54,5 @@ const VandorSchema = new mongoose_1.Schema({
     },
     timestamps: true
 });
-const Vandor = mongoose_1.default.model('vandor', VandorSchema);
-exports.Vandor = Vandor;
+const Vendor = mongoose_1.default.model('vendor', VendorSchema);
+exports.Vendor = Vendor;

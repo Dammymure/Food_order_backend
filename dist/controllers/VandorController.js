@@ -9,22 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetFoods = exports.AddFood = exports.UpdateVandorServices = exports.UpdateVandorCoverImage = exports.UpdateVandorProfile = exports.GetVandorProfile = exports.VandorLogin = void 0;
+exports.GetFoods = exports.AddFood = exports.UpdateVendorServices = exports.UpdateVendorCoverImage = exports.UpdateVendorProfile = exports.GetVendorProfile = exports.VendorLogin = void 0;
 const AdminController_1 = require("./AdminController");
 const utility_1 = require("../utility");
 const models_1 = require("../models");
-const VandorLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const VendorLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const existingVandor = yield (0, AdminController_1.FindVandor)("", email);
-    if (existingVandor !== null) {
+    const existingVendor = yield (0, AdminController_1.FindVendor)("", email);
+    if (existingVendor !== null) {
         // Validate Password
-        const validation = yield (0, utility_1.ValidatePassword)(password, existingVandor.password, existingVandor.salt);
+        const validation = yield (0, utility_1.ValidatePassword)(password, existingVendor.password, existingVendor.salt);
         if (validation) {
             const signature = (0, utility_1.GenerateSignature)({
-                _id: existingVandor.id,
-                email: existingVandor.email,
-                foodTypes: existingVandor.foodType,
-                name: existingVandor.name,
+                _id: existingVendor.id,
+                email: existingVendor.email,
+                foodTypes: existingVendor.foodType,
+                name: existingVendor.name,
             });
             return res.json(signature);
         }
@@ -34,78 +34,78 @@ const VandorLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
     return res.json({ message: "Login credential not valid" });
 });
-exports.VandorLogin = VandorLogin;
+exports.VendorLogin = VendorLogin;
 // ---------------------------------------------------------------
-const GetVandorProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const GetVendorProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     if (user) {
-        const existingVandor = yield (0, AdminController_1.FindVandor)(user._id);
-        return res.json(existingVandor);
+        const existingVendor = yield (0, AdminController_1.FindVendor)(user._id);
+        return res.json(existingVendor);
     }
-    return res.json({ message: "Vandor information Not Found" });
+    return res.json({ message: "Vendor information Not Found" });
 });
-exports.GetVandorProfile = GetVandorProfile;
+exports.GetVendorProfile = GetVendorProfile;
 // --------------------------------------------------------------------------
-const UpdateVandorProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const UpdateVendorProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { foodTypes, name, address, phone } = req.body;
     const user = req.user;
     if (user) {
-        const existingVandor = yield (0, AdminController_1.FindVandor)(user._id);
-        if (existingVandor !== null) {
-            existingVandor.name = name;
-            existingVandor.address = address;
-            existingVandor.phone = phone;
-            existingVandor.foodType = foodTypes;
-            const savedResult = yield existingVandor.save();
+        const existingVendor = yield (0, AdminController_1.FindVendor)(user._id);
+        if (existingVendor !== null) {
+            existingVendor.name = name;
+            existingVendor.address = address;
+            existingVendor.phone = phone;
+            existingVendor.foodType = foodTypes;
+            const savedResult = yield existingVendor.save();
             return res.json(savedResult);
         }
-        return res.json(existingVandor);
+        return res.json(existingVendor);
     }
-    return res.json({ message: "Vandor information Not Found" });
+    return res.json({ message: "Vendor information Not Found" });
 });
-exports.UpdateVandorProfile = UpdateVandorProfile;
+exports.UpdateVendorProfile = UpdateVendorProfile;
 // --------------------------------------------------------------------------
-const UpdateVandorCoverImage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const UpdateVendorCoverImage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     if (user) {
-        const vandor = yield (0, AdminController_1.FindVandor)(user._id);
-        if (vandor !== null) {
+        const vendor = yield (0, AdminController_1.FindVendor)(user._id);
+        if (vendor !== null) {
             const files = req.files;
             const images = files.map((file) => file.filename);
-            vandor.coverImages.push(...images);
-            const result = yield vandor.save();
+            vendor.coverImages.push(...images);
+            const result = yield vendor.save();
             return res.json(result);
         }
     }
     return res.json({ message: "Something went wrong with adding Cover Image" });
 });
-exports.UpdateVandorCoverImage = UpdateVandorCoverImage;
+exports.UpdateVendorCoverImage = UpdateVendorCoverImage;
 // ------------------------------------------------------------------------
-const UpdateVandorServices = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const UpdateVendorServices = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     if (user) {
-        const existingVandor = yield (0, AdminController_1.FindVandor)(user._id);
-        if (existingVandor !== null) {
-            existingVandor.serviceAvailable = !existingVandor.serviceAvailable;
-            const savedResult = yield existingVandor.save();
+        const existingVendor = yield (0, AdminController_1.FindVendor)(user._id);
+        if (existingVendor !== null) {
+            existingVendor.serviceAvailable = !existingVendor.serviceAvailable;
+            const savedResult = yield existingVendor.save();
             return res.json(savedResult);
         }
-        return res.json(existingVandor);
+        return res.json(existingVendor);
     }
-    return res.json({ message: "Vandor information Not Found" });
+    return res.json({ message: "Vendor information Not Found" });
 });
-exports.UpdateVandorServices = UpdateVandorServices;
+exports.UpdateVendorServices = UpdateVendorServices;
 // ------------------------------------------------------------------------
 const AddFood = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     if (user) {
         const { name, description, category, foodType, readyTime, price } = req.body;
-        const vandor = yield (0, AdminController_1.FindVandor)(user._id);
-        if (vandor !== null) {
+        const vendor = yield (0, AdminController_1.FindVendor)(user._id);
+        if (vendor !== null) {
             const files = req.files;
             const images = files.map((file) => file.filename);
             const createdFood = yield models_1.Food.create({
-                vandorId: vandor._id,
+                vendorId: vendor._id,
                 name: name,
                 description: description,
                 category: category,
@@ -115,8 +115,8 @@ const AddFood = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
                 price: price,
                 rating: 0,
             });
-            vandor.foods.push(createdFood);
-            const result = yield vandor.save();
+            vendor.foods.push(createdFood);
+            const result = yield vendor.save();
             return res.json(result);
         }
     }
@@ -127,11 +127,11 @@ exports.AddFood = AddFood;
 const GetFoods = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     if (user) {
-        const foods = yield models_1.Food.find({ vandorId: user._id });
+        const foods = yield models_1.Food.find({ vendorId: user._id });
         if (foods !== null) {
             return res.json(foods);
         }
     }
-    return res.json({ message: "Vandor information Not Found" });
+    return res.json({ message: "Vendor information Not Found" });
 });
 exports.GetFoods = GetFoods;

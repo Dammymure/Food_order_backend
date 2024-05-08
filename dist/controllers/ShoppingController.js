@@ -13,7 +13,7 @@ exports.RestaurantById = exports.SearchFoods = exports.GetFoodIn30Min = exports.
 const models_1 = require("../models");
 const GetFoodAvailability = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const pincode = req.params.pincode;
-    const result = yield models_1.Vandor.find({ pincode: pincode, serviceAvailable: true })
+    const result = yield models_1.Vendor.find({ pincode: pincode, serviceAvailable: true })
         .sort([["rating", "descending"]])
         .populate("foods");
     if (result.length > 0) {
@@ -25,7 +25,7 @@ exports.GetFoodAvailability = GetFoodAvailability;
 // ----------------------------------------------------------------------------
 const GetTopRestaurants = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const pincode = req.params.pincode;
-    const result = yield models_1.Vandor.find({ pincode: pincode, serviceAvailable: true })
+    const result = yield models_1.Vendor.find({ pincode: pincode, serviceAvailable: true })
         .sort([["rating", "descending"]])
         .limit(10);
     if (result.length > 0) {
@@ -36,14 +36,14 @@ const GetTopRestaurants = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 exports.GetTopRestaurants = GetTopRestaurants;
 const GetFoodIn30Min = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const pincode = req.params.pincode;
-    const result = yield models_1.Vandor.find({
+    const result = yield models_1.Vendor.find({
         pincode: pincode,
         serviceAvailable: true,
     }).populate("foods");
     if (result.length > 0) {
         let foodResult = [];
-        result.map((vandor) => {
-            const foods = vandor.foods;
+        result.map((vendor) => {
+            const foods = vendor.foods;
             foodResult.push(...foods.filter((food) => food.readyTime <= 30));
         });
         return res.status(200).json(foodResult);
@@ -54,7 +54,7 @@ exports.GetFoodIn30Min = GetFoodIn30Min;
 // -----------------------------------------------------------------------------------
 const SearchFoods = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const pincode = req.params.pincode;
-    const result = yield models_1.Vandor.find({
+    const result = yield models_1.Vendor.find({
         pincode: pincode,
         serviceAvailable: true,
     }).populate("foods");
@@ -68,7 +68,7 @@ const SearchFoods = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 exports.SearchFoods = SearchFoods;
 const RestaurantById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
-    const result = yield models_1.Vandor.findById(id).populate("foods");
+    const result = yield models_1.Vendor.findById(id).populate("foods");
     if (result) {
         return res.status(200).json(result);
     }

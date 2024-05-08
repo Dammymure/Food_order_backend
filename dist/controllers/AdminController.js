@@ -9,29 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetVandorByID = exports.GetVandors = exports.CreateVandor = exports.FindVandor = void 0;
+exports.GetVendorByID = exports.GetVendors = exports.CreateVendor = exports.FindVendor = void 0;
 const models_1 = require("../models");
 const utility_1 = require("../utility");
-const FindVandor = (id, email) => __awaiter(void 0, void 0, void 0, function* () {
+const FindVendor = (id, email) => __awaiter(void 0, void 0, void 0, function* () {
     if (email) {
-        return yield models_1.Vandor.findOne({ email: email });
+        return yield models_1.Vendor.findOne({ email: email });
     }
     else {
-        return yield models_1.Vandor.findById(id);
+        return yield models_1.Vendor.findById(id);
     }
 });
-exports.FindVandor = FindVandor;
-const CreateVandor = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.FindVendor = FindVendor;
+const CreateVendor = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, address, pincode, foodType, email, password, ownerName, phone, } = req.body;
-    const existingVandor = yield (0, exports.FindVandor)("", email);
-    if (existingVandor !== null) {
-        return res.json({ message: "A Vandor already exists with this email" });
+    const existingVendor = yield (0, exports.FindVendor)("", email);
+    if (existingVendor !== null) {
+        return res.json({ message: "A Vendor already exists with this email" });
     }
     // Generate salt
     const salt = yield (0, utility_1.GenerateSalt)();
     const userPassword = yield (0, utility_1.GeneratePassword)(password, salt);
     // encryptthe password using salt
-    const CreateVandor = yield models_1.Vandor.create({
+    const CreateVendor = yield models_1.Vendor.create({
         name: name,
         address: address,
         ownerName: ownerName,
@@ -46,23 +46,23 @@ const CreateVandor = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         rating: 0,
         foods: [],
     });
-    return res.json(CreateVandor);
+    return res.json(CreateVendor);
 });
-exports.CreateVandor = CreateVandor;
-const GetVandors = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const vandors = yield models_1.Vandor.find();
-    if (vandors !== null) {
-        return res.json(vandors);
+exports.CreateVendor = CreateVendor;
+const GetVendors = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const vendors = yield models_1.Vendor.find();
+    if (vendors !== null) {
+        return res.json(vendors);
     }
-    return res.json({ message: "Vandor data not available" });
+    return res.json({ message: "Vendor data not available" });
 });
-exports.GetVandors = GetVandors;
-const GetVandorByID = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const vandorId = req.params.id;
-    const vandor = yield (0, exports.FindVandor)(vandorId);
-    if (vandor !== null) {
-        return res.json(vandor);
+exports.GetVendors = GetVendors;
+const GetVendorByID = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const vendorId = req.params.id;
+    const vendor = yield (0, exports.FindVendor)(vendorId);
+    if (vendor !== null) {
+        return res.json(vendor);
     }
-    return res.json({ message: "Vandor data not available" });
+    return res.json({ message: "Vendor data not available" });
 });
-exports.GetVandorByID = GetVandorByID;
+exports.GetVendorByID = GetVendorByID;

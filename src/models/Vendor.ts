@@ -14,6 +14,8 @@ interface VendorDoc extends Document {
   coverImages: [string];
   rating: number;
   foods: any;
+  lat: number;
+  lng: number;
 }
 
 const VendorSchema = new Schema(
@@ -36,6 +38,8 @@ const VendorSchema = new Schema(
         ref: "food",
       },
     ],
+    lat: {types: Number},
+    lng: {types: Number}
   },
   {
     toJSON: {
